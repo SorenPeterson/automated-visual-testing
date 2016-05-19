@@ -10,11 +10,7 @@ var Image = require('canvas').Image;
 
 var args = process.argv.slice(2, process.argv.length);
 
-if (args[0] === '-h' || args[0] === '--version') {
-  console.log(
-`This system will only support PNG's`
-  )
-}
+_()
 
 /*var webdriver = require('selenium-webdriver'),
     By = require('selenium-webdriver').By,
