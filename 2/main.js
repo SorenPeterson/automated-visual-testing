@@ -28,7 +28,9 @@ var sortedArgs = {};
   });
 })();
 
-console.log(sortedArgs);
+if (sortedArgs['-h'] !== undefined || sortedArgs['--help'] !== undefined) {
+  console.log('help!!!');
+}
 
 /*var webdriver = require('selenium-webdriver'),
     By = require('selenium-webdriver').By,
