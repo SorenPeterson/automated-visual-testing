@@ -7,10 +7,28 @@ var base64 = require('base64-js');
 var resemble = require('resemble').resemble;
 var uuid = require('node-uuid');
 var Image = require('canvas').Image;
+var _ = require('underscore');
 
 var args = process.argv.slice(2, process.argv.length);
 
-_()
+var sortedArgs = {};
+
+(function () {
+  var lastFlag;
+  _(args).each(function (arg) {
+    if (/^(-\w|--\w[\w-]*)$/.test(arg)) {
+      lastFlag = arg;
+      sortedArgs[arg] = [];
+    } else if (lastFlag === undefined) {
+      console.log('Malformed arguments. Try -h');
+      process.exit(1);
+    } else {
+      sortedArgs[lastFlag].push(arg);
+    }
+  });
+})();
+
+console.log(sortedArgs);
 
 /*var webdriver = require('selenium-webdriver'),
     By = require('selenium-webdriver').By,
