@@ -1,10 +1,22 @@
+#!/usr/bin/env node
+
+// This application will manage and compare screenshots at different points throughout a test suite
+
 var fs = require('fs');
 var base64 = require('base64-js');
 var resemble = require('resemble').resemble;
 var uuid = require('node-uuid');
 var Image = require('canvas').Image;
 
-var webdriver = require('selenium-webdriver'),
+var args = process.argv.slice(2, process.argv.length);
+
+if (args[0] === '-h' || args[0] === '--version') {
+  console.log(
+`This system will only support PNG's`
+  )
+}
+
+/*var webdriver = require('selenium-webdriver'),
     By = require('selenium-webdriver').By,
     until = require('selenium-webdriver').until;
 
@@ -52,3 +64,4 @@ Promise.all([getScreenshot('chrome'), getScreenshot('firefox')]).then(function (
     console.log(data);
   })
 })
+*/
