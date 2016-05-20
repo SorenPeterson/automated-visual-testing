@@ -1,6 +1,9 @@
+
 #!/usr/bin/env node
 
 // This application will manage and compare screenshots at different points throughout a test suite
+// Exit Codes:
+// 1 - Bad arguments
 
 var fs = require('fs');
 var base64 = require('base64-js');
@@ -13,6 +16,8 @@ var args = process.argv.slice(2, process.argv.length);
 
 var sortedArgs = {};
 
+// This piece of code extracts all of the flags being passed to the program and
+// the corresponding subarguments.
 (function () {
   var lastFlag;
   _(args).each(function (arg) {
@@ -28,9 +33,39 @@ var sortedArgs = {};
   });
 })();
 
+// imageData stores all of the data for the screenshots. This includes the name
+// and locations for the master screenshots.
+
+var ImageData = function () {
+  try {
+    this._json = JSON.parse(fs.readFileSynce('file', 'utf8'));
+  } catch (e) {
+    this._json = {};
+  }
+}
+
+ImageData.prototype.set_master = function (tag, path) {
+  var filename = uuid.v1() + '.png';
+  this._json[tag] = filename;
+}
+
 if (sortedArgs['-h'] !== undefined || sortedArgs['--help'] !== undefined) {
-  console.log('help!!!');
+  console.log(
+`help!!!`
+  );
   process.exit();
+}
+
+var subArguments = sortedArgs['--set-master'];
+if (subArguments !== undefined) {
+  var tag = subArguments[0];
+  if (subArguments.length !== 1) {
+    console.log('--set-master expects a single argument');
+    process.exit(1);
+  } else if () {
+  } else {
+    var imageFile
+  }
 }
 
 /*var webdriver = require('selenium-webdriver'),
