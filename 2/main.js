@@ -46,9 +46,10 @@ console.log(args);
 // imageData stores all of the data for the screenshots. This includes the name
 // and locations for the master screenshots.
 
-var ImageData = function () {
+var ImageData = function (path) {
+  this._data_file_path = path;
   try {
-    this._json = JSON.parse(fs.readFileSynce('file', 'utf8'));
+    this._json = JSON.parse(fs.readFileSynce(path, 'utf8'));
   } catch (e) {
     this._json = {};
   }
@@ -59,6 +60,12 @@ ImageData.prototype.set_master = function (tag, path) {
   fs.createReadStream(path).pipe(fs.createWriteStream('images/' + filename));
   this._json[tag] = filename;
 }
+
+ImageData.prototype.save = function () {
+  fs.writeFileSync(this._data_file_path, JSON.stringify(this._json));
+}
+
+var imageData = new ImageData('data.json');
 
 if (args['-h'] !== undefined || args['--help'] !== undefined) {
   console.log(
