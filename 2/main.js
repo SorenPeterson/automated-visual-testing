@@ -1,4 +1,3 @@
-
 #!/usr/bin/env node
 
 // This application will manage and compare screenshots at different points throughout a test suite
@@ -14,24 +13,35 @@ var _ = require('underscore');
 
 var args = process.argv.slice(2, process.argv.length);
 
-var sortedArgs = {};
+var args = {};
 
 // This piece of code extracts all of the flags being passed to the program and
 // the corresponding subarguments.
-(function () {
+(() => {
   var lastFlag;
   _(args).each(function (arg) {
     if (/^(-\w|--\w[\w-]*)$/.test(arg)) {
       lastFlag = arg;
-      sortedArgs[arg] = [];
+      args[arg] = [];
     } else if (lastFlag === undefined) {
       console.log('Malformed arguments. Try -h');
       process.exit(1);
     } else {
-      sortedArgs[lastFlag].push(arg);
+      args[lastFlag].push(arg);
     }
   });
 })();
+
+// This piece of code converts the args object into a more usable format
+(() => {
+  var {
+    '--set-master': set_master,
+    '--compare': compare,
+    '--path': path
+  } = args;
+  args = {set_master, compare, path}
+})();
+console.log(args);
 
 // imageData stores all of the data for the screenshots. This includes the name
 // and locations for the master screenshots.
@@ -46,25 +56,23 @@ var ImageData = function () {
 
 ImageData.prototype.set_master = function (tag, path) {
   var filename = uuid.v1() + '.png';
+  fs.createReadStream(path).pipe(fs.createWriteStream('images/' + filename));
   this._json[tag] = filename;
 }
 
-if (sortedArgs['-h'] !== undefined || sortedArgs['--help'] !== undefined) {
+if (args['-h'] !== undefined || args['--help'] !== undefined) {
   console.log(
 `help!!!`
   );
   process.exit();
 }
 
-var subArguments = sortedArgs['--set-master'];
-if (subArguments !== undefined) {
-  var tag = subArguments[0];
-  if (subArguments.length !== 1) {
+if (args.set_master !== undefined) {
+  var tag = args.set_master[0];
+  if (args.set_master.length !== 1) {
     console.log('--set-master expects a single argument');
     process.exit(1);
-  } else if () {
   } else {
-    var imageFile
   }
 }
 
