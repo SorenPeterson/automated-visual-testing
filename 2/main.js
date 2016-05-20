@@ -30,6 +30,7 @@ var sortedArgs = {};
 
 if (sortedArgs['-h'] !== undefined || sortedArgs['--help'] !== undefined) {
   console.log('help!!!');
+  process.exit();
 }
 
 /*var webdriver = require('selenium-webdriver'),
