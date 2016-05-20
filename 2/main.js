@@ -4,6 +4,9 @@
 // Exit Codes:
 // 1 - Bad arguments
 
+// possible todos
+// --delete flag to clean up any files that we're analyzed/added to the database
+
 var fs = require('fs');
 var base64 = require('base64-js');
 var resemble = require('resemble').resemble;
@@ -45,7 +48,7 @@ var args = {};
 var ImageData = function (path) {
   this._data_file_path = path;
   try {
-    this._json = JSON.parse(fs.readFileSynce(path, 'utf8'));
+    this._json = JSON.parse(fs.readFileSync(path, 'utf8'));
   } catch (e) {
     this._json = {};
   }
@@ -85,7 +88,12 @@ if (args.set_master !== undefined) {
 }
 
 if (args.compare !== undefined) {
-  
+  var tag = args.compare[0];
+  console.log(imageData._json);
+  resemble('images/' + imageData._json[tag]).compareTo(args.path[0])
+    .onComplete((data) => {
+      console.log(data);
+    });
 }
 
 /*var webdriver = require('selenium-webdriver'),
