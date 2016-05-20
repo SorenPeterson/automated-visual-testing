@@ -78,9 +78,14 @@ if (args.set_master !== undefined) {
   } else if (args.path === undefined) {
     console.log('you must specify the --path');
   } else {
-    imageData.set_master(args.set_master[0], args.path[0]);
+    imageData.set_master(tag, args.path[0]);
     imageData.save();
   }
+  process.exit();
+}
+
+if (args.compare !== undefined) {
+  
 }
 
 /*var webdriver = require('selenium-webdriver'),
