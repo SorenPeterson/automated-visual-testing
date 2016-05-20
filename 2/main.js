@@ -11,20 +11,17 @@ var uuid = require('node-uuid');
 var Image = require('canvas').Image;
 var _ = require('underscore');
 
-var args = process.argv.slice(2, process.argv.length);
-
 var args = {};
 
 // This piece of code extracts all of the flags being passed to the program and
 // the corresponding subarguments.
 (() => {
   var lastFlag;
-  _(args).each(function (arg) {
+  _(process.argv.slice(2, process.argv.length)).each(function (arg) {
     if (/^(-\w|--\w[\w-]*)$/.test(arg)) {
       lastFlag = arg;
       args[arg] = [];
     } else if (lastFlag === undefined) {
-      console.log('Malformed arguments. Try -h');
       process.exit(1);
     } else {
       args[lastFlag].push(arg);
@@ -41,7 +38,6 @@ var args = {};
   } = args;
   args = {set_master, compare, path}
 })();
-console.log(args);
 
 // imageData stores all of the data for the screenshots. This includes the name
 // and locations for the master screenshots.
@@ -79,7 +75,11 @@ if (args.set_master !== undefined) {
   if (args.set_master.length !== 1) {
     console.log('--set-master expects a single argument');
     process.exit(1);
+  } else if (args.path === undefined) {
+    console.log('you must specify the --path');
   } else {
+    imageData.set_master(args.set_master[0], args.path[0]);
+    imageData.save();
   }
 }
 
