@@ -13,6 +13,7 @@ var resemble = require('resemble').resemble;
 var uuid = require('node-uuid');
 var Image = require('canvas').Image;
 var _ = require('underscore');
+var exec = require('child_process').exec;
 
 var args = {};
 
@@ -52,10 +53,10 @@ var ImageData = function (path) {
   try {
     this._json = JSON.parse(fs.readFileSync(path, 'utf8'));
   } catch (e) {
-    this._json = {};
+    this._json = {
+      failures: []
+    };
   }
-  // We specifically want to overwrite any previous failures because they should not persist to a subsequent test
-  this._json.failures = [];
 }
 
 ImageData.prototype.set_master = function (tag, path) {
@@ -74,7 +75,6 @@ ImageData.prototype.record_version = function (version, tag, path) {
 }
 
 ImageData.prototype.record_failure = function (version, tag, data) {
-  console.log(data);
   var filename = uuid.v1() + '.png';
   fs.writeFileSync('images/' + filename, data.getBuffer());
   this._json.failures.push({
@@ -89,6 +89,11 @@ ImageData.prototype.save = function () {
 }
 
 var imageData = new ImageData('data.json');
+
+if (args.set_master && args.set_master[0] === 'failures') {
+  console.log('Please choose a different tag');
+  process.exit(1);
+}
 
 if (args.set_master) {
   var tag = args.set_master[0];
@@ -108,6 +113,7 @@ if (args.compare) {
   var tag = args.compare[0];
   resemble('images/' + imageData._json[tag].filename).compareTo(args.path[0])
     .onComplete((data) => {
+      console.log(data.getImageDataUrl());
       if (Number(data.misMatchPercentage) > 0) {
         imageData.record_failure(args.version[0], tag, data);
         console.log('failure');
@@ -122,4 +128,8 @@ if (args.compare) {
 }
 
 if (args.review) {
+  while(imageData._json.failures.length) {
+    exec('open ' + imageData._json.failures[0].filename);
+    imageData._json.failures.shift();
+  }
 }
