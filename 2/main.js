@@ -38,9 +38,10 @@ var args = {};
     '--set-master': set_master,
     '--compare': compare,
     '--path': path,
-    '--version': version
+    '--version': version,
+    '--review': review
   } = args;
-  args = {set_master, compare, path, version}
+  args = {set_master, compare, path, version, review}
 })();
 
 // imageData stores all of the data for the screenshots. This includes the name
@@ -85,19 +86,9 @@ ImageData.prototype.save = function () {
 
 var imageData = new ImageData('data.json');
 
-if (args['-h'] !== undefined || args['--help'] !== undefined) {
-  console.log(
-`help!!!`
-  );
-  process.exit();
-}
-
-if (args.set_master !== undefined) {
+if (args.set_master) {
   var tag = args.set_master[0];
-  if (args.set_master.length !== 1) {
-    console.log('--set-master expects a single argument');
-    process.exit(1);
-  } else if (args.path === undefined) {
+  if (!args.path) {
     console.log('you must specify the --path');
   } else {
     imageData.set_master(tag, args.path[0]);
@@ -109,7 +100,7 @@ if (args.set_master !== undefined) {
   process.exit();
 }
 
-if (args.compare !== undefined) {
+if (args.compare) {
   var tag = args.compare[0];
   resemble('images/' + imageData._json[tag].filename).compareTo(args.path[0])
     .onComplete((data) => {
@@ -126,52 +117,5 @@ if (args.compare !== undefined) {
     });
 }
 
-/*var webdriver = require('selenium-webdriver'),
-    By = require('selenium-webdriver').By,
-    until = require('selenium-webdriver').until;
-
-function save (data) {
-  return new Promise(function (resolve, reject) {
-    filename = 'images/' + uuid.v1() + '.png';
-    fs.writeFile(filename, data, 'base64', function (err) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(filename);
-      }
-    })
-  });
+if (args.review) {
 }
-
-function createImage (url) {
-  var image = new Image();
-  image.src = url;
-  return image;
-}
-
-function getScreenshot (browser) {
-  var driver = new webdriver.Builder()
-      .forBrowser(browser)
-      .build();
-
-  driver.get('http://www.google.com/ncr');
-  return new Promise(function (resolve, reject) {
-    driver.takeScreenshot().then(function (data) {
-      save(data).then(function (filename) {
-        resolve(filename);
-      });
-    });
-    driver.quit();
-  })
-}
-
-Promise.all([getScreenshot('chrome'), getScreenshot('firefox')]).then(function (results) {
-  console.log(results);
-  debugger;
-  resemble(results[0]).compareTo(results[1]).onComplete(function (data) {
-    fs.writeFile('result.png', data.getBuffer(), 'base64', function () {
-    });
-    console.log(data);
-  })
-})
-*/
