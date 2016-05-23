@@ -37,9 +37,10 @@ var args = {};
   var {
     '--set-master': set_master,
     '--compare': compare,
-    '--path': path
+    '--path': path,
+    '--version': version
   } = args;
-  args = {set_master, compare, path}
+  args = {set_master, compare, path, version}
 })();
 
 // imageData stores all of the data for the screenshots. This includes the name
@@ -91,6 +92,9 @@ if (args.set_master !== undefined) {
     console.log('you must specify the --path');
   } else {
     imageData.set_master(tag, args.path[0]);
+    if (args.version) {
+      imageData.record_version(args.version[0], tag, args.path[0]);
+    }
     imageData.save();
   }
   process.exit();
@@ -98,11 +102,14 @@ if (args.set_master !== undefined) {
 
 if (args.compare !== undefined) {
   var tag = args.compare[0];
-  console.log(imageData._json[tag].filename);
   resemble('images/' + imageData._json[tag].filename).compareTo(args.path[0])
     .onComplete((data) => {
       console.log(data);
     });
+  if (args.version) {
+    imageData.record_version(args.version[0], tag, args.path[0]);
+    imageData.save();
+  }
 }
 
 /*var webdriver = require('selenium-webdriver'),
