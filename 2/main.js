@@ -57,7 +57,16 @@ var ImageData = function (path) {
 ImageData.prototype.set_master = function (tag, path) {
   var filename = uuid.v1() + '.png';
   fs.writeFileSync('images/' + filename, fs.readFileSync(path));
-  this._json[tag] = filename;
+  this._json[tag] = {
+    filename,
+    versions: {}
+  };
+}
+
+ImageData.prototype.record_version = function (version, tag, path) {
+  var filename = uuid.v1() + '.png';
+  fs.createReadStream(path).pipe(fs.createWriteStream('images/' + filename));
+  this._json[tag].versions[version] = filename;
 }
 
 ImageData.prototype.save = function () {
@@ -89,8 +98,8 @@ if (args.set_master !== undefined) {
 
 if (args.compare !== undefined) {
   var tag = args.compare[0];
-  console.log(imageData._json);
-  resemble('images/' + imageData._json[tag]).compareTo(args.path[0])
+  console.log(imageData._json[tag].filename);
+  resemble('images/' + imageData._json[tag].filename).compareTo(args.path[0])
     .onComplete((data) => {
       console.log(data);
     });
