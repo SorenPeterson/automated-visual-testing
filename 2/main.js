@@ -56,7 +56,7 @@ var ImageData = function (path) {
 
 ImageData.prototype.set_master = function (tag, path) {
   var filename = uuid.v1() + '.png';
-  fs.createReadStream(path).pipe(fs.createWriteStream('images/' + filename));
+  fs.writeFileSync('images/' + filename, fs.readFileSync(path));
   this._json[tag] = filename;
 }
 
