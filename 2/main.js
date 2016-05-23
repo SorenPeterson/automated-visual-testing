@@ -69,14 +69,18 @@ ImageData.prototype.set_master = function (tag, path) {
 
 ImageData.prototype.record_version = function (version, tag, path) {
   var filename = uuid.v1() + '.png';
-  fs.createReadStream(path).pipe(fs.createWriteStream('images/' + filename));
+  fs.writeFileSync('images/' + filename, fs.readFileSync(path));
   this._json[tag].versions[version] = filename;
 }
 
-ImageData.prototype.record_failure = function (version, tag) {
+ImageData.prototype.record_failure = function (version, tag, data) {
+  console.log(data);
+  var filename = uuid.v1() + '.png';
+  fs.writeFileSync('images/' + filename, data.getBuffer());
   this._json.failures.push({
     version,
-    tag
+    tag,
+    filename
   });
 }
 
@@ -105,7 +109,7 @@ if (args.compare) {
   resemble('images/' + imageData._json[tag].filename).compareTo(args.path[0])
     .onComplete((data) => {
       if (Number(data.misMatchPercentage) > 0) {
-        imageData.record_failure(args.version[0], tag);
+        imageData.record_failure(args.version[0], tag, data);
         console.log('failure');
       } else {
         console.log('success');
