@@ -115,6 +115,9 @@ if (args.compare !== undefined) {
     .onComplete((data) => {
       if (Number(data.misMatchPercentage) > 0) {
         imageData.record_failure(args.version[0], tag);
+        console.log('failure');
+      } else {
+        console.log('success');
       }
       if (args.version) {
         imageData.record_version(args.version[0], tag, args.path[0]);
