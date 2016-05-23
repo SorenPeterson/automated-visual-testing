@@ -53,6 +53,8 @@ var ImageData = function (path) {
   } catch (e) {
     this._json = {};
   }
+  // We specifically want to overwrite any previous failures because they should not persist to a subsequent test
+  this._json.failures = [];
 }
 
 ImageData.prototype.set_master = function (tag, path) {
@@ -68,6 +70,13 @@ ImageData.prototype.record_version = function (version, tag, path) {
   var filename = uuid.v1() + '.png';
   fs.createReadStream(path).pipe(fs.createWriteStream('images/' + filename));
   this._json[tag].versions[version] = filename;
+}
+
+ImageData.prototype.record_failure = function (version, tag) {
+  this._json.failures.push({
+    version,
+    tag
+  });
 }
 
 ImageData.prototype.save = function () {
@@ -104,12 +113,14 @@ if (args.compare !== undefined) {
   var tag = args.compare[0];
   resemble('images/' + imageData._json[tag].filename).compareTo(args.path[0])
     .onComplete((data) => {
-      console.log(data);
+      if (Number(data.misMatchPercentage) > 0) {
+        imageData.record_failure(args.version[0], tag);
+      }
+      if (args.version) {
+        imageData.record_version(args.version[0], tag, args.path[0]);
+      }
+      imageData.save();
     });
-  if (args.version) {
-    imageData.record_version(args.version[0], tag, args.path[0]);
-    imageData.save();
-  }
 }
 
 /*var webdriver = require('selenium-webdriver'),
