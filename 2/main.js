@@ -54,7 +54,7 @@ var ImageData = function (path) {
     this._json = JSON.parse(fs.readFileSync(path, 'utf8'));
   } catch (e) {
     this._json = {
-      failures: []
+      failures: {}
     };
   }
 }
@@ -77,11 +77,10 @@ ImageData.prototype.record_version = function (version, tag, path) {
 ImageData.prototype.record_failure = function (version, tag, data) {
   var filename = uuid.v1() + '.png';
   fs.writeFileSync('images/' + filename, data.getBuffer());
-  this._json.failures.push({
+  this._json.failures[filename] = {
     version,
-    tag,
-    filename
-  });
+    tag
+  };
 }
 
 ImageData.prototype.save = function () {
