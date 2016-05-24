@@ -1,10 +1,18 @@
+$(document).ready(() => {
+  $.ajaxSetup({cache: false});
+});
+
 var ButtonBox = React.createClass({
   handleClick: function(evt) {
+    var {tag, version, filename, reviewList} = this.props;
+    var previousState = reviewList.state;
     switch (evt.target.dataset.choice) {
       case "pass":
+        delete previousState.failures[filename];
       case "replace":
       case "fail":
     }
+    reviewList.setState(previousState);
   },
   render: function () {
     return (
@@ -19,10 +27,11 @@ var ButtonBox = React.createClass({
 
 var ReviewBox = React.createClass({
   render: function () {
+    var {tag, version, filename, reviewList} = this.props;
     return (
       <div className="review-box">
         <img src={'images/' + this.props.filename} />
-        <ButtonBox tag={this.props.tag} version={this.props.version} />
+        <ButtonBox tag={tag} version={version} filename={filename} reviewList={reviewList} />
       </div>
     );
   }
@@ -41,9 +50,11 @@ var ReviewList = React.createClass({
   },
   render: function () {
     var l = [];
-    this.state.failures.forEach(function (image) {
+    var {failures} = this.state;
+    Object.keys(failures).forEach((filename) => {
+      var {tag, version} = failures[filename];
       l.push(
-        <ReviewBox key={image.filename} filename={image.filename} tag={image.tag} version={image.version} />
+        <ReviewBox key={filename} filename={filename} tag={tag} version={version} reviewList={this} />
       );
     });
     return <div>{l}</div>;
