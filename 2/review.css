@@ -1,12 +1,9 @@
 .review-box {
   margin: auto;
   width: 400px;
+  text-align: center;
 }
 
 .review-box img {
   width: 100%;
-}
-
-.button-box {
-  text-align: center;
 }

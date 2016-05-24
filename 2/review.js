@@ -7,10 +7,12 @@ var ButtonBox = React.createClass({
     var {tag, version, filename, reviewList} = this.props;
     var previousState = reviewList.state;
     switch (evt.target.dataset.choice) {
+      case "fail":
+        break;
+      case "replace":
+        previousState[tag].filename = previousState[tag].versions[version];
       case "pass":
         delete previousState.failures[filename];
-      case "replace":
-      case "fail":
     }
     reviewList.setState(previousState);
   },
@@ -37,6 +39,13 @@ var ReviewBox = React.createClass({
   }
 });
 
+var DownloadLink = React.createClass({
+  render: function () {
+    var data = btoa(JSON.stringify(this.props.data));
+    return <a href={"data:application/octet-stream;charset=uft-16le;base64," + data} download="data.json">Download results</a>;
+  }
+});
+
 var ReviewList = React.createClass({
   getInitialState: function () {
     return {
@@ -57,7 +66,12 @@ var ReviewList = React.createClass({
         <ReviewBox key={filename} filename={filename} tag={tag} version={version} reviewList={this} />
       );
     });
-    return <div>{l}</div>;
+    return (
+      <div>
+        {l}
+        <DownloadLink data={this.state}/>
+      </div>
+    );
   }
 });
 
