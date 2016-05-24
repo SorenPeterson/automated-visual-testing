@@ -1,0 +1,12 @@
+.review-box {
+  margin: auto;
+  width: 400px;
+}
+
+.review-box img {
+  width: 100%;
+}
+
+.button-box {
+  text-align: center;
+}
