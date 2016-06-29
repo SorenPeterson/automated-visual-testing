@@ -1,9 +1,12 @@
-/* jshint esversion: 6 */
+#!/usr/bin/env node
+
+/* esversion: 6 */
 
 var http = require('http'),
     url = require('url'),
     path = require('path'),
     fs = require('fs');
+    
 var mimeTypes = {
     "html": "text/html",
     "jpeg": "image/jpeg",
@@ -12,18 +15,29 @@ var mimeTypes = {
     "js": "text/javascript",
     "css": "text/css"};
 
-http.createServer((request, response) => {
-  var {url} = request;
-  var localPath = '.' + url;
-  fs.exists((exists) => {
-    var stats = fs.lstatSync(localPath);
-    if (stats.isFile()) {
-      response.writeHead(200);
-      response.write(fs.readFileSync(localPath));
-    } else {
-      response.writeHead(404);
-      response.write('NOPE');
+var routes = {
+  '/save': {
+    'POST': (request) => {
+      console.log(request);
     }
-  });
-  response.end();
+  }
+};
+
+http.createServer((request, response) => {
+  var {url, method} = request;
+  if (routes[url] && routes[url][method]) {
+    routes[url][method](request);
+  } else {
+    var localPath = '.' + url;
+    fs.exists(localPath, (exists) => {
+      if (exists && fs.lstatSync(localPath).isFile()) {
+        response.writeHead(200);
+        response.write(fs.readFileSync(localPath));
+      } else {
+        response.writeHead(404);
+        response.write('NOPE');
+      }
+      response.end();
+    });
+  }
 }).listen(8080);
